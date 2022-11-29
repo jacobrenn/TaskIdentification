@@ -55,7 +55,7 @@ test_model = tflow.utils.mask_model(
     test_model,
     50,
     x = train_x[:100],
-    y = [train_y[:100], mnist_train_labels[:100].reshape(-1, 1), fashion_train_labels[:100].reshape(-1, 1)]
+    y = [train_y[:100].reshape(-1, 1), mnist_train_labels[:100].reshape(-1, 1), fashion_train_labels[:100].reshape(-1, 1)]
 )
 test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adam')
 
