@@ -51,14 +51,24 @@ output = tf.keras.layers.Add()([discerner_x1, discerner_x2])
 test_model = tf.keras.models.Model(input_layer, [output, dsel1, dsel2])
 test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adam')
 
+test_model = tflow.utils.mask_model(
+    test_model,
+    50,
+    x = train_x[:100],
+    y = [train_y[:100], mnist_train_labels[:100], fashion_train_labels[:100]]
+)
+test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adam')
+
 tf.keras.utils.plot_model(test_model, to_file = 'mnist_fashion_model.png', show_shapes = False)
 
 test_model.fit(
     train_x,
     [train_y, mnist_train_labels, fashion_train_labels],
-    epochs = 4,
+    epochs = 100,
     batch_size = 128,
-    verbose = 0
+    verbose = 0,
+    validation_split = 0.2,
+    callbacks = tf.keras.callbacks.EarlyStopping(min_delta = 0.004, patience = 3)
 )
 
 preds = test_model.predict(test_x)
