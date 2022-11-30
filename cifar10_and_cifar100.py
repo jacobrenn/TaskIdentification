@@ -71,7 +71,7 @@ tf.keras.utils.plot_model(test_model, to_file = 'cifar10_cifar100_model.png', sh
 test_model.fit(
     cifar100_x_train,
     [cifar10_y_train, cifar100_y_train, train_task_labels[:cifar10_x_train.shape[0]]],
-    epochs = 100,
+    epochs = 10,
     batch_size = 128,
     verbose = 1,
     validation_split = 0.2,
@@ -84,7 +84,7 @@ test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorica
 test_model.fit(
     cifar10_x_train,
     [cifar10_y_train, cifar100_y_train, train_task_labels[:cifar100_x_train.shape[0]]],
-    epochs = 100,
+    epochs = 10,
     batch_size = 128,
     verbose = 1,
     validation_split = 0.2,
@@ -95,7 +95,7 @@ test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorica
 test_model.fit(
     train_x,
     [train_y, train_y, train_task_labels],
-    epochs = 100,
+    epochs = 10,
     batch_size = 128,
     verbose = 1,
     validation_split = 0.2,
