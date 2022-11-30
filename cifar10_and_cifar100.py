@@ -20,15 +20,18 @@ train_x = np.concatenate((cifar10_x_train, cifar100_x_train), axis = 0)
 train_y = np.concatenate((cifar10_y_train, cifar100_y_train), axis = 0).reshape(-1, 1)
 test_x = np.concatenate((cifar10_x_test, cifar100_x_test), axis = 0)
 test_y = np.concatenate((cifar10_y_test, cifar100_y_test), axis = 0).reshape(-1, 1)
-train_task_labels = np.asarray([0] * cifar10_x_train.shape[0] + [1] * cifar100_x_train.shape[0]).reshape(-1, 1)
-test_task_labels = np.asarray([0] * cifar10_x_test.shape[0] + [1] * cifar100_x_test.shape[0]).reshape(-1, 1)
+cifar100_train_task_labels = np.asarray([0] * cifar10_x_train.shape[0] + [1] * cifar100_x_train.shape[0]).reshape(-1, 1)
+cifar100_test_task_labels = np.asarray([0] * cifar10_x_test.shape[0] + [1] * cifar100_x_test.shape[0]).reshape(-1, 1)
+cifar10_train_task_labels = np.asarray([1] * cifar10_x_train.shape[0] + [0] * cifar100_x_train.shape[0]).reshape(-1, 1)
+cifar10_test_task_labels = np.asarray([1] * cifar10_x_test.shape[0] + [0] * cifar100_x_test.shape[0]).reshape(-1, 1)
 
 indices = np.arange(train_x.shape[0])
 np.random.shuffle(indices)
 
 train_x = train_x[indices]
 train_y = train_y[indices]
-train_task_labels = train_task_labels[indices]
+cifar10_train_task_labels = cifar10_train_task_labels[indices]
+cifar100_train_task_labels = cifar100_train_task_labels[indices]
 
 input_layer = tf.keras.layers.Input(train_x.shape[1:])
 x = tf.keras.applications.ResNet50(include_top = False)(input_layer)
@@ -48,53 +51,39 @@ x1 = tf.keras.layers.Dropout(0.5)(x1)
 x2 = tf.keras.layers.Dropout(0.5)(x2)
 x1 = tf.keras.layers.BatchNormalization()(x1)
 x2 = tf.keras.layers.BatchNormalization()(x2)
-cifar10_logit_output = tflow.layers.MaskedDense(10, activation = 'softmax')(x1)
-cifar100_logit_output = tflow.layers.MaskedDense(100, activation = 'softmax')(x2)
+logits = tflow.layers.MultiMaskedDense(100, activation = 'softmax')([x1, x2])
 
-concatenated_logits = tf.keras.layers.Concatenate()([cifar10_logit_output, cifar100_logit_output])
-discerner = tflow.layers.MaskedDense(100, activation = 'relu')(concatenated_logits)
-discerner = tflow.layers.MaskedDense(1, activation = 'sigmoid')(discerner)
+discerner = tflow.layers.MultiMaskedDense(100, activation = 'relu')(logits)
+discerner = tflow.layers.MultiMaskedDense(1, activation = 'sigmoid')(discerner)
+discerner = tflow.layers.MultitaskNormalization(discerner)
 
-test_model = tf.keras.models.Model(input_layer, [cifar10_logit_output, cifar100_logit_output, discerner])
-test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorical_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax')
+dsel1 = tflow.layers.SelectorLayer(0)(discerner)
+dsel2 = tflow.layers.SelectorLayer(1)(discerner)
+
+lsel1 = tflow.layers.SelectorLayer(0)(logits)
+lsel2 = tflow.layers.SelectorLayer(1)(logits)
+
+l1 = tf.keras.layers.Multiply()([dsel1, lsel1])
+l2 = tf.keras.layers.Multiply()([dsel2, lsel2])
+
+overall_output = tf.keras.layers.Add()([l1, l2])
+
+test_model = tf.keras.models.Model(input_layer, [overall_output, lsel1, lsel2])
+test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax')
 
 test_model = tflow.utils.mask_model(
     test_model,
     50,
     x = cifar100_x_train[:1000],
-    y = [cifar10_y_train[:1000], cifar100_y_train[:1000], train_task_labels[:1000]]
+    y = [cifar10_y_train[:1000], cifar10_train_task_labels[:1000], cifar100_train_task_labels[:1000]]
 )
-test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorical_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax', loss_weights = [0, 1, 0])
+test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax', loss_weights = [0, 1, 0])
 
 tf.keras.utils.plot_model(test_model, to_file = 'cifar10_cifar100_model.png', show_shapes = False)
 
 test_model.fit(
-    cifar100_x_train,
-    [cifar10_y_train, cifar100_y_train, train_task_labels[:cifar10_x_train.shape[0]]],
-    epochs = 10,
-    batch_size = 256,
-    verbose = 1,
-    validation_split = 0.2,
-    callbacks = tf.keras.callbacks.EarlyStopping(min_delta = 0.004, patience = 3, restore_best_weights = True)
-)
-
-test_model.layers[1].trainable = False
-
-test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorical_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax', loss_weights = [1, 0, 0])
-test_model.fit(
-    cifar10_x_train,
-    [cifar10_y_train, cifar100_y_train, train_task_labels[:cifar100_x_train.shape[0]]],
-    epochs = 10,
-    batch_size = 256,
-    verbose = 1,
-    validation_split = 0.2,
-    callbacks = tf.keras.callbacks.EarlyStopping(min_delta = 0.004, patience = 3, restore_best_weights = True)
-)
-
-test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorical_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax', loss_weights = [0, 0, 1])
-test_model.fit(
     train_x,
-    [train_y, train_y, train_task_labels],
+    [train_y, cifar10_train_task_labels, cifar100_train_task_labels],
     epochs = 10,
     batch_size = 256,
     verbose = 1,
@@ -104,40 +93,24 @@ test_model.fit(
 
 preds = test_model.predict(test_x)
 class_preds = preds[0].argmax(axis = 1).flatten()
-cifar10_class_preds = preds[0].argmax(axis = 1).flatten()
-cifar100_class_preds = preds[1].argmax(axis = 1).flatten()
-task_preds = (preds[-1] >= 0.5).astype(int).flatten()
-
-test_task_labels = test_task_labels.flatten()
-test_y = test_y.flatten()
+cifar10_task_preds = (preds[1] >= 0.5).astype(int).flatten()
+cifar100_class_preds = (preds[2] >= 0.5).astype(int).flatten()
 
 print('Performance for Test Model:')
 print('\n')
 
 print('Performance at Identifying Correct Task:')
-print(confusion_matrix(test_task_labels, task_preds))
-print(classification_report(test_task_labels, task_preds))
+print(confusion_matrix(cifar10_test_task_labels, cifar10_task_preds))
+print(classification_report(cifar10_test_task_labels, cifar10_task_preds))
 print('\n\n')
 
 # Performance on CIFAR10 Regardless of Identified Task
-print('Performance on CIFAR10:')
-print(confusion_matrix(test_y[test_task_labels == 0], cifar10_class_preds[test_task_labels == 0]))
-print(classification_report(test_y[test_task_labels == 0], cifar10_class_preds[test_task_labels == 0]))
 
 # Performance on CIFAR100 Regardless of Identified Task
-print('Performance on CIFAR100:')
-print(confusion_matrix(test_y[test_task_labels == 1], cifar100_class_preds[test_task_labels == 1]))
-print(classification_report(test_y[test_task_labels == 1], cifar100_class_preds[test_task_labels == 1]))
 
 # Performance on identified as cifar10
-print('Performance When Predicted as CIFAR10:')
-print(confusion_matrix(test_y[task_preds == 0], cifar10_class_preds[task_preds == 0]))
-print(classification_report(test_y[task_preds == 0], cifar10_class_preds[task_preds == 0]))
 
 # Performance on identified as cifar100
-print('Performance When Predicted as CIFAR100:')
-print(confusion_matrix(test_y[task_preds == 1], cifar10_class_preds[task_preds == 1]))
-print(classification_report(test_y[task_preds == 1], cifar10_class_preds[task_preds == 1]))
 
 # Performance when predicted cifar10 but actually cifar100
 
