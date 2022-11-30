@@ -64,7 +64,7 @@ test_model = tflow.utils.mask_model(
     x = cifar10_x_train[:1000],
     y = [cifar10_y_train[:1000], cifar10_y_train[:1000], train_task_labels[:1000].reshape(-1, 1)]
 )
-test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adam', loss_weights = [1, 0, 0])
+test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorical_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adam', loss_weights = [1, 0, 0])
 
 tf.keras.utils.plot_model(test_model, to_file = 'cifar10_cifar100_model.png', show_shapes = False)
 
@@ -78,7 +78,7 @@ test_model.fit(
     callbacks = tf.keras.callbacks.EarlyStopping(min_delta = 0.004, patience = 3, restore_best_weights = True)
 )
 
-test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adam', loss_weights = [0, 1, 0])
+test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorical_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adam', loss_weights = [0, 1, 0])
 test_model.fit(
     cifar100_x_train,
     [cifar10_y_train, cifar100_y_train, train_task_labels[:cifar100_x_train.shape[0]]],
@@ -89,7 +89,7 @@ test_model.fit(
     callbacks = tf.keras.callbacks.EarlyStopping(min_delta = 0.004, patience = 3, restore_best_weights = True)
 )
 
-test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adam', loss_weights = [0, 0, 1])
+test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorical_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adam', loss_weights = [0, 0, 1])
 test_model.fit(
     train_x,
     [train_y, train_y, train_task_labels],
