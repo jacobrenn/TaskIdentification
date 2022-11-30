@@ -116,7 +116,18 @@ print(confusion_matrix(test_task_labels, task_preds))
 print(classification_report(test_task_labels, task_preds))
 print('\n\n')
 
+# Performance on CIFAR10 Regardless of Identified Task
+print('Performance on CIFAR10:')
+print(confusion_matrix(test_y[test_task_labels == 0], cifar10_class_preds[test_task_labels == 0]))
+print(classification_report(test_y[test_task_labels == 0], cifar10_class_preds[test_task_labels == 0]))
+
+# Performance on CIFAR100 Regardless of Identified Task
+print('Performance on CIFAR100:')
+print(confusion_matrix(test_y[test_task_labels == 1], cifar100_class_preds[test_task_labels == 1]))
+print(classification_report(test_y[test_task_labels == 1], cifar100_class_preds[test_task_labels == 1]))
+
 # Performance on identified as cifar10
+print('Performance When Predicted as CIFAR10:')
 
 # Performance on identified as cifar100
 
