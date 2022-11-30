@@ -78,6 +78,8 @@ test_model.fit(
     callbacks = tf.keras.callbacks.EarlyStopping(min_delta = 0.004, patience = 3, restore_best_weights = True)
 )
 
+test_model.layers[1].trainable = False
+
 test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorical_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax', loss_weights = [0, 1, 0])
 test_model.fit(
     cifar10_x_train,
