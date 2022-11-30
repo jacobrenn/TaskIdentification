@@ -28,7 +28,7 @@ np.random.shuffle(indices)
 
 train_x = train_x[indices]
 train_y = train_y[indices]
-cifar10_train_labels = train_task_labels[indices]
+train_task_labels = train_task_labels[indices]
 
 input_layer = tf.keras.layers.Input(train_x.shape[1:])
 x = tf.keras.applications.ResNet50(include_top = False)(input_layer)
@@ -61,8 +61,8 @@ test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorica
 test_model = tflow.utils.mask_model(
     test_model,
     50,
-    x = train_x[:1000],
-    y = [train_y[:1000].reshape(-1, 1), train_y[:1000].reshape(-1, 1), cifar10_train_labels[:1000].reshape(-1, 1)]
+    x = cifar10_x_train,
+    y = [cifar10_y_train, cifar10_y_train, train_task_labels[:1000].reshape(-1, 1)]
 )
 test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adam', loss_weights = [1, 0, 0])
 
@@ -70,7 +70,7 @@ tf.keras.utils.plot_model(test_model, to_file = 'cifar10_cifar100_model.png', sh
 
 test_model.fit(
     cifar10_x_train,
-    [cifar10_y_train, cifar100_y_train, cifar10_train_labels[:cifar10_x_train.shape[0]]],
+    [cifar10_y_train, cifar100_y_train, train_task_labels[:cifar10_x_train.shape[0]]],
     epochs = 100,
     batch_size = 128,
     verbose = 1,
@@ -81,7 +81,7 @@ test_model.fit(
 test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adam', loss_weights = [0, 1, 0])
 test_model.fit(
     cifar100_x_train,
-    [cifar10_y_train, cifar100_y_train, cifar10_train_labels[:cifar100_x_train.shape[0]]],
+    [cifar10_y_train, cifar100_y_train, train_task_labels[:cifar100_x_train.shape[0]]],
     epochs = 100,
     batch_size = 128,
     verbose = 1,
@@ -92,7 +92,7 @@ test_model.fit(
 test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adam', loss_weights = [0, 0, 1])
 test_model.fit(
     train_x,
-    [train_y, train_y, cifar10_train_labels],
+    [train_y, train_y, train_task_labels],
     epochs = 100,
     batch_size = 128,
     verbose = 1,
