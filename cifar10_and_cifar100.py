@@ -84,7 +84,7 @@ test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentro
 test_model.fit(
     train_x,
     [train_y, cifar10_train_task_labels, cifar100_train_task_labels],
-    epochs = 10,
+    epochs = 1,
     batch_size = 256,
     validation_split = 0.2,
     callbacks = tf.keras.callbacks.EarlyStopping(min_delta = 0.004, patience = 3, restore_best_weights = True),
@@ -152,6 +152,7 @@ try:
     print(confusion_matrix(test_y[indicator], class_preds[indicator]))
     print(classification_report(test_y[indicator], class_preds[indicator]))
 except Exception as e:
+    print(e)
     print('Not applicable')
 print('\n\n')
 
@@ -161,5 +162,6 @@ try:
     print(confusion_matrix(test_y[indicator], class_preds[indicator]))
     print(classification_report(test_y[indicator], class_preds[indicator]))
 except Exception as e:
+    print(e)
     print('Not applicable')
 print('\n\n')
