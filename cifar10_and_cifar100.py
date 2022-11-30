@@ -21,9 +21,9 @@ train_y = np.concatenate((cifar10_y_train, cifar100_y_train), axis = 0).reshape(
 test_x = np.concatenate((cifar10_x_test, cifar100_x_test), axis = 0)
 test_y = np.concatenate((cifar10_y_test, cifar100_y_test), axis = 0).reshape(-1, 1)
 cifar100_train_task_labels = np.asarray([0] * cifar10_x_train.shape[0] + [1] * cifar100_x_train.shape[0]).reshape(-1, 1)
-cifar100_test_task_labels = np.asarray([0] * cifar10_x_test.shape[0] + [1] * cifar100_x_test.shape[0]).reshape(-1, 1)
+cifar100_test_task_labels = np.asarray([0] * cifar10_x_test.shape[0] + [1] * cifar100_x_test.shape[0]).reshape(-1, 1).flatten()
 cifar10_train_task_labels = np.asarray([1] * cifar10_x_train.shape[0] + [0] * cifar100_x_train.shape[0]).reshape(-1, 1)
-cifar10_test_task_labels = np.asarray([1] * cifar10_x_test.shape[0] + [0] * cifar100_x_test.shape[0]).reshape(-1, 1)
+cifar10_test_task_labels = np.asarray([1] * cifar10_x_test.shape[0] + [0] * cifar100_x_test.shape[0]).reshape(-1, 1).flatten()
 
 indices = np.arange(train_x.shape[0])
 np.random.shuffle(indices)
