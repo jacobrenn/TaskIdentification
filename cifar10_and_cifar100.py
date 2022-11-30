@@ -89,7 +89,7 @@ test_model.fit(
     verbose = 1,
     validation_split = 0.2,
     callbacks = tf.keras.callbacks.EarlyStopping(min_delta = 0.004, patience = 3, restore_best_weights = True),
-    verbose = 2
+    verbosity = 2
 )
 
 preds = test_model.predict(test_x)
