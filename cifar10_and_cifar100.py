@@ -84,7 +84,7 @@ test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentro
 test_model.fit(
     train_x,
     [train_y, cifar10_train_task_labels, cifar100_train_task_labels],
-    epochs = 10,
+    epochs = 100,
     batch_size = 256,
     validation_split = 0.2,
     callbacks = tf.keras.callbacks.EarlyStopping(min_delta = 0.004, patience = 3, restore_best_weights = True),
