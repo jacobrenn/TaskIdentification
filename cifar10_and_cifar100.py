@@ -79,7 +79,7 @@ test_model = tflow.utils.mask_model(
     x = train_x[:1000],
     y = [train_y[:1000], cifar10_train_task_labels[:1000], cifar100_train_task_labels[:1000]]
 )
-test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax', loss_weights = [0, 1, 0])
+test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax')
 
 test_model.fit(
     train_x,
