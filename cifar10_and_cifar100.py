@@ -68,8 +68,10 @@ l2 = tf.keras.layers.Multiply()([dsel2, lsel2])
 
 overall_output = tf.keras.layers.Add()([l1, l2])
 
-test_model = tf.keras.models.Model(input_layer, [overall_output, lsel1, lsel2])
+test_model = tf.keras.models.Model(input_layer, [overall_output, dsel1, dsel2])
 test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax')
+
+tf.keras.utils.plot_model(test_model, to_file = 'cifar10_cifar100_model.png', show_shapes = False)
 
 test_model = tflow.utils.mask_model(
     test_model,
@@ -78,8 +80,6 @@ test_model = tflow.utils.mask_model(
     y = [train_y[:1000], cifar10_train_task_labels[:1000], cifar100_train_task_labels[:1000]]
 )
 test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax', loss_weights = [0, 1, 0])
-
-tf.keras.utils.plot_model(test_model, to_file = 'cifar10_cifar100_model.png', show_shapes = False)
 
 test_model.fit(
     train_x,
@@ -94,26 +94,71 @@ test_model.fit(
 preds = test_model.predict(test_x)
 class_preds = preds[0].argmax(axis = 1).flatten()
 cifar10_task_preds = (preds[1] >= 0.5).astype(int).flatten()
-cifar100_class_preds = (preds[2] >= 0.5).astype(int).flatten()
+cifar100_task_preds = (preds[2] >= 0.5).astype(int).flatten()
 
 print('Performance for Test Model:')
 print('\n')
 
-print('Performance at Identifying Correct Task:')
+print('Performance on Identifying CIFAR10 Task:')
 print(confusion_matrix(cifar10_test_task_labels, cifar10_task_preds))
 print(classification_report(cifar10_test_task_labels, cifar10_task_preds))
 print('\n\n')
 
-# Performance on CIFAR10 Regardless of Identified Task
+print('Performance on Identifying CIFAR100 Task:')
+print(confusion_matrix(cifar100_test_task_labels, cifar100_task_preds))
+print(classification_report(cifar100_test_task_labels, cifar100_task_preds))
+print('\n\n')
 
-# Performance on CIFAR100 Regardless of Identified Task
+print('Performance Regardless of Task:')
+print(confusion_matrix(test_y, class_preds))
+print(classification_report(test_y, class_preds))
+print('\n\n')
 
-# Performance on identified as cifar10
+print('Performance When Truly CIFAR10 Task:')
+print(confusion_matrix(test_y[cifar10_test_task_labels == 1], class_preds[cifar10_test_task_labels == 1]))
+print(classification_report(test_y[cifar10_test_task_labels == 1], class_preds[cifar10_test_task_labels == 1]))
+print('\n\n')
 
-# Performance on identified as cifar100
+print('Performance When Truly CIFAR100 Task:')
+print(confusion_matrix(test_y[cifar100_test_task_labels == 1], class_preds[cifar100_test_task_labels == 1]))
+print(classification_report(test_y[cifar100_test_task_labels == 1], class_preds[cifar100_test_task_labels == 1]))
+print('\n\n')
 
-# Performance when predicted cifar10 but actually cifar100
+print('Performance When Predicted CIFAR10 Task:')
+print(confusion_matrix(test_y[cifar10_task_preds == 1], class_preds[cifar10_task_preds == 1]))
+print(classification_report(test_y[cifar10_task_preds == 1], class_preds[cifar10_task_preds == 1]))
+print('\n\n')
 
-# Performance when predicted cifar100 but actually cifar10
+print('Performance When Predicted CIFAR100 Task:')
+print(confusion_matrix(test_y[cifar100_task_preds == 1], class_preds[cifar100_task_preds == 1]))
+print(classification_report(test_y[cifar100_task_preds == 1], class_preds[cifar100_task_preds == 1]))
+print('\n\n')
 
-# Overall performance
+print('Performance When Predicted CIFAR10 Task but Truly CIFAR100 Task:')
+try:
+    indicator = cifar10_task_preds != cifar10_test_task_labels
+    indicator[cifar100_test_task_labels == 0] = 0
+    print(confusion_matrix(test_y[indicator], class_preds[indicator]))
+    print(classification_report(test_y[indicator], class_preds[indicator]))
+except Exception as e:
+    print('Not applicable')
+print('\n\n')
+
+print('Performance When Predicted CIFAR100 Task but Truly CIFAR10 Task:')
+try:
+    indicator = cifar100_task_preds != cifar100_test_task_labels
+    indicator[cifar10_test_task_labels == 0] = 0
+    print(confusion_matrix(test_y[indicator], class_preds[indicator]))
+    print(classification_report(test_y[indicator], class_preds[indicator]))
+except Exception as e:
+    print('Not applicable')
+print('\n\n')
+
+print('Overall Performance When Task Incorrectly Predicted:')
+try:
+    indicator = cifar10_task_preds != cifar10_test_task_labels
+    print(confusion_matrix(test_y[indicator], class_preds[indicator]))
+    print(classification_report(test_y[indicator], class_preds[indicator]))
+except Exception as e:
+    print('Not applicable')
+print('\n\n')
