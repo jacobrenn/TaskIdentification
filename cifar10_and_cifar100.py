@@ -69,15 +69,15 @@ l2 = tf.keras.layers.Multiply()([dsel2, lsel2])
 overall_output = tf.keras.layers.Add()([l1, l2])
 
 test_model = tf.keras.models.Model(input_layer, [overall_output, lsel1, lsel2])
-test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorical_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax')
+test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax')
 
 test_model = tflow.utils.mask_model(
     test_model,
     50,
-    x = cifar100_x_train[:1000],
-    y = [cifar10_y_train[:1000], cifar10_train_task_labels[:1000], cifar100_train_task_labels[:1000]]
+    x = train_x[:1000],
+    y = [train_x[:1000], cifar10_train_task_labels[:1000], cifar100_train_task_labels[:1000]]
 )
-test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorical_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax', loss_weights = [0, 1, 0])
+test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax', loss_weights = [0, 1, 0])
 
 tf.keras.utils.plot_model(test_model, to_file = 'cifar10_cifar100_model.png', show_shapes = False)
 
