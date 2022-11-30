@@ -104,9 +104,12 @@ test_model.fit(
 
 preds = test_model.predict(test_x)
 class_preds = preds[0].argmax(axis = 1).flatten()
-cifar10_class_preds = preds[0].argmax(axis = 1)
-cifar100_class_preds = preds[1].argmax(axis = 1)
-task_preds = (preds[-1] >= 0.5).astype(int)
+cifar10_class_preds = preds[0].argmax(axis = 1).flatten()
+cifar100_class_preds = preds[1].argmax(axis = 1).flatten()
+task_preds = (preds[-1] >= 0.5).astype(int).flatten()
+
+test_task_labels = test_task_labels.flatten()
+test_y = test_y.flatten()
 
 print('Performance for Test Model:')
 print('\n')
