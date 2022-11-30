@@ -104,72 +104,28 @@ test_model.fit(
 
 preds = test_model.predict(test_x)
 class_preds = preds[0].argmax(axis = 1).flatten()
-pred_cifar10 = (preds[1]>= 0.5).astype(int).flatten()
-pred_cifar100 = (preds[2]>=0.5).astype(int).flatten()
+cifar10_class_preds = preds[0].argmax(axis = 1)
+cifar100_class_preds = preds[1].argmax(axis = 1)
+task_preds = (preds[-1] >= 0.5).astype(int)
 
 print('Performance for Test Model:')
 print('\n')
 
-print('Performance on Identifying CIFAR10 Task:')
-print(confusion_matrix(cifar10_test_labels, pred_cifar10))
-print(classification_report(cifar10_test_labels, pred_cifar10))
+print('Performance at Identifying Correct Task:')
+print(confusion_matrix(test_task_labels, task_preds))
+print(classification_report(test_task_labels, task_preds))
 print('\n\n')
 
-print('Performance on Identifying CIFAR100 Task:')
-print(confusion_matrix(cifar100_test_labels, pred_cifar100))
-print(classification_report(cifar100_test_labels, pred_cifar100))
-print('\n\n')
+# Performance on identified as cifar10
 
-print('Performance Regardless of Task:')
-print(confusion_matrix(test_y, class_preds))
-print(classification_report(test_y, class_preds))
-print('\n\n')
+# Performance on identified as cifar100
 
-print('Performance When Truly CIFAR10 Task:')
-print(confusion_matrix(test_y[cifar10_test_labels == 1], class_preds[cifar10_test_labels == 1]))
-print(classification_report(test_y[cifar10_test_labels == 1], class_preds[cifar10_test_labels == 1]))
-print('\n\n')
+# Performance on actually cifar10
 
-print('Performance When Truly CIFAR100 Task:')
-print(confusion_matrix(test_y[cifar100_test_labels == 1], class_preds[cifar100_test_labels == 1]))
-print(classification_report(test_y[cifar100_test_labels == 1], class_preds[cifar100_test_labels == 1]))
-print('\n\n')
+# Performance on actually cifar100
 
-print('Performance When Predicted CIFAR10 Task:')
-print(confusion_matrix(test_y[pred_cifar10 == 1], class_preds[pred_cifar10 == 1]))
-print(classification_report(test_y[pred_cifar10 == 1], class_preds[pred_cifar10 == 1]))
-print('\n\n')
+# Performance when predicted cifar10 but actually cifar100
 
-print('Performance When Predicted CIFAR100 Task:')
-print(confusion_matrix(test_y[pred_cifar100 == 1], class_preds[pred_cifar100 == 1]))
-print(classification_report(test_y[pred_cifar100 == 1], class_preds[pred_cifar100 == 1]))
-print('\n\n')
+# Performance when predicted cifar100 but actually cifar10
 
-print('Performance When Predicted CIFAR10 Task but Truly CIFAR100 Task:')
-try:
-    indicator = pred_cifar10 != cifar10_test_labels
-    indicator[cifar100_test_labels == 0] = 0
-    print(confusion_matrix(test_y[indicator], class_preds[indicator]))
-    print(classification_report(test_y[indicator], class_preds[indicator]))
-except Exception as e:
-    print('Not applicable')
-print('\n\n')
-
-print('Performance When Predicted CIFAR100 Task but Truly CIFAR10 Task:')
-try:
-    indicator = pred_cifar100 != cifar100_test_labels
-    indicator[cifar10_test_labels == 0] = 0
-    print(confusion_matrix(test_y[indicator], class_preds[indicator]))
-    print(classification_report(test_y[indicator], class_preds[indicator]))
-except Exception as e:
-    print('Not applicable')
-print('\n\n')
-
-print('Overall Performance When Task Incorrectly Predicted:')
-try:
-    indicator = pred_cifar10 != cifar10_test_labels
-    print(confusion_matrix(test_y[indicator], class_preds[indicator]))
-    print(classification_report(test_y[indicator], class_preds[indicator]))
-except Exception as e:
-    print('Not applicable')
-print('\n\n')
+# Overall performance
