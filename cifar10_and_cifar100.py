@@ -72,7 +72,7 @@ test_model.fit(
     cifar100_x_train,
     [cifar10_y_train, cifar100_y_train, train_task_labels[:cifar10_x_train.shape[0]]],
     epochs = 10,
-    batch_size = 128,
+    batch_size = 256,
     verbose = 1,
     validation_split = 0.2,
     callbacks = tf.keras.callbacks.EarlyStopping(min_delta = 0.004, patience = 3, restore_best_weights = True)
@@ -85,7 +85,7 @@ test_model.fit(
     cifar10_x_train,
     [cifar10_y_train, cifar100_y_train, train_task_labels[:cifar100_x_train.shape[0]]],
     epochs = 10,
-    batch_size = 128,
+    batch_size = 256,
     verbose = 1,
     validation_split = 0.2,
     callbacks = tf.keras.callbacks.EarlyStopping(min_delta = 0.004, patience = 3, restore_best_weights = True)
@@ -96,7 +96,7 @@ test_model.fit(
     train_x,
     [train_y, train_y, train_task_labels],
     epochs = 10,
-    batch_size = 128,
+    batch_size = 256,
     verbose = 1,
     validation_split = 0.2,
     callbacks = tf.keras.callbacks.EarlyStopping(min_delta = 0.004, patience = 3, restore_best_weights = True)
