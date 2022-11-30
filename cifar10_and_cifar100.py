@@ -17,9 +17,9 @@ cifar100_x_train = cifar100_x_train/255
 cifar100_x_test = cifar100_x_test/255
 
 train_x = np.concatenate((cifar10_x_train, cifar100_x_train), axis = 0)
-train_y = np.concatenate((cifar10_y_train, cifar100_y_train), axis = 0)
+train_y = np.concatenate((cifar10_y_train, cifar100_y_train), axis = 0).reshape(-1, 1)
 test_x = np.concatenate((cifar10_x_test, cifar100_x_test), axis = 0)
-test_y = np.concatenate((cifar10_y_test, cifar100_y_test), axis = 0)
+test_y = np.concatenate((cifar10_y_test, cifar100_y_test), axis = 0).reshape(-1, 1)
 train_task_labels = np.asarray([0] * cifar10_x_train.shape[0] + [1] * cifar100_x_train.shape[0])
 test_class_labels = np.asarray([0] * cifar10_x_test.shape[0] + [1] * cifar100_x_test.shape[0])
 
