@@ -79,7 +79,7 @@ test_model.fit(
     [train_y, cifar10_train_labels, cifar100_train_labels],
     epochs = 100,
     batch_size = 128,
-    verbose = 0,
+    verbose = 1,
     validation_split = 0.2,
     callbacks = tf.keras.callbacks.EarlyStopping(min_delta = 0.004, patience = 3)
 )
