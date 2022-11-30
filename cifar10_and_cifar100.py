@@ -131,12 +131,13 @@ print(classification_report(test_y[test_task_labels == 1], cifar100_class_preds[
 
 # Performance on identified as cifar10
 print('Performance When Predicted as CIFAR10:')
+print(confusion_matrix(test_y[task_preds == 0], cifar10_class_preds[task_preds == 0]))
+print(classification_report(test_y[task_preds == 0], cifar10_class_preds[task_preds == 0]))
 
 # Performance on identified as cifar100
-
-# Performance on actually cifar10
-
-# Performance on actually cifar100
+print('Performance When Predicted as CIFAR100:')
+print(confusion_matrix(test_y[task_preds == 1], cifar10_class_preds[task_preds == 1]))
+print(classification_report(test_y[task_preds == 1], cifar10_class_preds[task_preds == 1]))
 
 # Performance when predicted cifar10 but actually cifar100
 
