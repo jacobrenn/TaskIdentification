@@ -95,6 +95,7 @@ preds = test_model.predict(test_x)
 class_preds = preds[0].argmax(axis = 1).flatten()
 cifar10_task_preds = (preds[1] >= 0.5).astype(int).flatten()
 cifar100_task_preds = (preds[2] >= 0.5).astype(int).flatten()
+test_y = test_y.flatten()
 
 print('Performance for Test Model:')
 print('\n')
