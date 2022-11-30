@@ -61,7 +61,7 @@ test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorica
 test_model = tflow.utils.mask_model(
     test_model,
     50,
-    x = train_x[:100],
+    x = train_x[:1000],
     y = [train_y[:1000].reshape(-1, 1), train_y[:1000].reshape(-1, 1), cifar10_train_labels[:1000].reshape(-1, 1)]
 )
 test_model.compile(loss = ['sparse_categorical_crossentropy', 'binary_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adam', loss_weights = [1, 0, 0])
