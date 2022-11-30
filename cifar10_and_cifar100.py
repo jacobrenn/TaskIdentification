@@ -55,7 +55,7 @@ logits = tflow.layers.MultiMaskedDense(100, activation = 'softmax')([x1, x2])
 
 discerner = tflow.layers.MultiMaskedDense(100, activation = 'relu')(logits)
 discerner = tflow.layers.MultiMaskedDense(1, activation = 'sigmoid')(discerner)
-discerner = tflow.layers.MultitaskNormalization(discerner)
+discerner = tflow.layers.MultitaskNormalization()(discerner)
 
 dsel1 = tflow.layers.SelectorLayer(0)(discerner)
 dsel2 = tflow.layers.SelectorLayer(1)(discerner)
