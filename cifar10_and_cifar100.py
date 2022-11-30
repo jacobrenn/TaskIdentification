@@ -21,7 +21,7 @@ train_y = np.concatenate((cifar10_y_train, cifar100_y_train), axis = 0).reshape(
 test_x = np.concatenate((cifar10_x_test, cifar100_x_test), axis = 0)
 test_y = np.concatenate((cifar10_y_test, cifar100_y_test), axis = 0).reshape(-1, 1)
 train_task_labels = np.asarray([0] * cifar10_x_train.shape[0] + [1] * cifar100_x_train.shape[0]).reshape(-1, 1)
-test_class_labels = np.asarray([0] * cifar10_x_test.shape[0] + [1] * cifar100_x_test.shape[0]).reshape(-1, 1)
+test_task_labels = np.asarray([0] * cifar10_x_test.shape[0] + [1] * cifar100_x_test.shape[0]).reshape(-1, 1)
 
 indices = np.arange(train_x.shape[0])
 np.random.shuffle(indices)
@@ -62,7 +62,7 @@ test_model = tflow.utils.mask_model(
     test_model,
     50,
     x = cifar100_x_train[:1000],
-    y = [cifar10_y_train[:1000], cifar100_y_train[:1000], train_task_labels[:1000].reshape(-1, 1)]
+    y = [cifar10_y_train[:1000], cifar100_y_train[:1000], train_task_labels[:1000]]
 )
 test_model.compile(loss = ['sparse_categorical_crossentropy', 'sparse_categorical_crossentropy', 'binary_crossentropy'], metrics = ['accuracy'], optimizer = 'adamax', loss_weights = [0, 1, 0])
 
