@@ -116,13 +116,13 @@ print(classification_report(test_y, class_preds))
 print('\n\n')
 
 print('Performance When Truly CIFAR10 Task:')
-print(confusion_matrix(test_y[cifar10_task_preds == 1], class_preds[cifar10_task_preds == 1]))
-print(classification_report(test_y[cifar10_task_preds == 1], class_preds[cifar10_task_preds == 1]))
+print(confusion_matrix(test_y[cifar10_test_task_labels == 1], class_preds[cifar10_test_task_labels == 1]))
+print(classification_report(test_y[cifar10_test_task_labels == 1], class_preds[cifar10_test_task_labels == 1]))
 print('\n\n')
 
 print('Performance When Truly CIFAR100 Task:')
-print(confusion_matrix(test_y[cifar100_task_preds == 1], class_preds[cifar100_task_preds == 1]))
-print(classification_report(test_y[cifar100_task_preds == 1], class_preds[cifar100_task_preds == 1]))
+print(confusion_matrix(test_y[cifar100_test_task_labels == 1], class_preds[cifar100_test_task_labels == 1]))
+print(classification_report(test_y[cifar100_test_task_labels == 1], class_preds[cifar100_test_task_labels == 1]))
 print('\n\n')
 
 print('Performance When Predicted CIFAR10 Task:')
