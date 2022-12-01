@@ -91,7 +91,7 @@ test_model.fit(
     verbose = 2
 )
 
-preds = test_model.predict(test_x)
+preds = test_model.predict(test_x, verbose = 0)
 class_preds = preds[0].argmax(axis = 1).flatten()
 cifar10_task_preds = (preds[1] >= 0.5).astype(int).flatten()
 cifar100_task_preds = (preds[2] >= 0.5).astype(int).flatten()
