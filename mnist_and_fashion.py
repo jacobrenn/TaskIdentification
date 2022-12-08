@@ -1,8 +1,10 @@
-from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, roc_curve
 from beyondml import tflow
 import tensorflow as tf
 import numpy as np
 import warnings
+
+import matplotlib.pyplot as plt
 
 warnings.filterwarnings('ignore')
 
@@ -75,6 +77,12 @@ preds = test_model.predict(test_x)
 class_preds = preds[0].argmax(axis = 1).flatten()
 pred_mnist = (preds[1]>= 0.5).astype(int).flatten()
 pred_fashion = (preds[2]>=0.5).astype(int).flatten()
+
+fpr, tpr, _ = roc_curve(mnist_test_labels, preds[1])
+plt.plot(fpr, tpr)
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.savefig('mnist_roc_curve.png')
 
 print('Performance for Test Model:')
 print('\n')
