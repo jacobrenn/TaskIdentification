@@ -1,8 +1,10 @@
-from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, roc_curve
 from beyondml import tflow
 import tensorflow as tf
 import numpy as np
 import warnings
+
+import matplotlib.pyplot as plt
 
 warnings.filterwarnings('ignore')
 
@@ -96,6 +98,12 @@ class_preds = preds[0].argmax(axis = 1).flatten()
 cifar10_task_preds = (preds[1] >= 0.5).astype(int).flatten()
 cifar100_task_preds = (preds[2] >= 0.5).astype(int).flatten()
 test_y = test_y.flatten()
+
+fpr, tpr, _ = roc_curve(cifar10_test_task_labels, preds[1])
+plt.plot(fpr, tpr)
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.savefig('cifar_roc_curve.png')
 
 print('Performance for Test Model:')
 print('\n')
